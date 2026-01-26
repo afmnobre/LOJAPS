@@ -50,8 +50,8 @@ require 'nav.php';
 
 <div class="menu">
   <button onclick="abrirPopup('/relacionamentos/relacionamentos.php', 'RelEdições')">🔗 Relacionar Edições</button>
-  <button onclick="abrirPopup('/ligamagic/index.php', 'CRUDLigaMagic')">📘 - CRUD LigaMagic!</button>
-  <button onclick="abrirPopup('/scryfall/index.php', 'CRUDScryfall')">🌐 - CRUD Scryfall!</button>
+  <button onclick="abrirPopup('/ligamagic/index.php', 'CRUDLigaMagic')">📘 - CRUD LigaMagic</button>
+  <button onclick="abrirPopup('/scryfall/index.php', 'CRUDScryfall')">🌐 - CRUD Scryfall</button>
   <button onclick="abrirPopup('/edicoes/index.php', 'NumCardEdicoes')">🌐 Numero Card Edicoes Scryfall</button>
   <button onclick="abrirPopup('/comparar/comparar_cartas.php', 'CompararCartas')">🌐 Comparação de Cartas</button>
   <button onclick="abrirPopup('/comparar/comparar_imagens.php', 'CompararImagens')">🌐 Comparação por Imagens</button>
