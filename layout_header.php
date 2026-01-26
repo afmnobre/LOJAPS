@@ -1,0 +1,235 @@
+<?php
+// layout_header.php
+?>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Players Stop TCG</title>
+
+<!-- Fonte estilo Pokémon -->
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+<style>
+/* =========================
+   BASE
+========================= */
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #0f0f0f;
+    color: #fff;
+}
+
+main {
+    margin-top: 56px; /* Altura do header fixo */
+    padding-bottom: 30px; /* Altura do footer fixo */
+    box-sizing: border-box;
+    max-width: 100vw;
+    overflow-x: hidden;
+    background: #0f0f0f;
+}
+
+
+/* =========================
+   HEADER (VISUAL)
+========================= */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    box-sizing: border-box;
+    background: #b30000;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    z-index: 1000;
+    height: 56px;
+}
+
+header img {
+    height: 56px;
+}
+
+header h1 {
+    margin: 0;
+    font-family: 'Press Start 2P', Arial, sans-serif;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* =========================
+   NAVEGAÇÃO (APENAS ESTILO)
+========================= */
+nav {
+    margin-left: auto;
+    display: flex;
+    gap: 12px;
+}
+
+nav a {
+    font-family: 'Press Start 2P', Arial, sans-serif;
+    font-size: 10px;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+nav a:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateY(-2px) scale(1.03);
+}
+
+nav a.ativo {
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.4);
+}
+
+/* =========================
+   TABELA MINIMALISTA
+========================= */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    color: #eee;
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.1);
+}
+
+th, td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #333;
+    text-align: left;
+}
+
+th {
+    background-color: #222;
+    font-weight: 600;
+}
+
+tbody tr:hover {
+    background-color: #333;
+    cursor: default;
+}
+
+/* =========================
+   LINKS BOTÕES arredondados
+========================= */
+table a {
+    display: inline-block;
+    padding: 6px 12px;
+    margin: 0 4px;
+    font-size: 12px;
+    color: #fff;
+    background-color: #444;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    user-select: none;
+}
+
+table a:hover {
+    background-color: #ffcb05;
+    color: #222;
+    border-color: #ffcb05;
+    box-shadow: 0 0 8px #ffcb05;
+}
+
+/* =========================
+   EMOJIS nas ações
+========================= */
+table a[href*="desativar="]::before { content: "🚫 "; }
+table a[href*="ativar="]:not([href*="desativar="])::before { content: "✅ "; }
+table a[href*="edit="]::before { content: "✏️ "; }
+table a[href*="delete="]::before { content: "🗑️ "; }
+
+/* =========================
+   STATUS PEDIDOS
+========================= */
+td.pago-cell,
+td.total-pago {
+    background: #00ff00;
+    color: #000;
+    font-weight: bold;
+}
+
+td.total-pendente {
+    background: #ff0000;
+    color: #000;
+    font-weight: bold;
+}
+
+/* =========================
+   INPUTS / BOTÕES
+========================= */
+input, select, button {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: none;
+}
+
+button {
+    background: #b30000;
+    color: #fff;
+    cursor: pointer;
+}
+
+/* =========================
+   TOTAL DO DIA
+========================= */
+.total-dia {
+    background: #e6f4ea;
+    color: #1b5e20;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+footer {
+    height: 30px;
+    line-height: 12px;
+    padding: 6px 20px;
+    background: #b30000;
+    color: #fff;
+    text-align: center;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 7px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    box-sizing: border-box;
+    z-index: 1000;
+    box-shadow: 0 -4px 10px rgba(179, 0, 0, 0.6);
+}
+
+    
+    
+</style>
+</head>
+
+<body>
+
+
+<main>
+<!-- Conteúdo principal aqui -->
+
+
+<footer>
+  <p>© 2026 Players Stop TCG — Todos os direitos reservados.</p>
+</footer>
+
+</body>
+</html>
+
