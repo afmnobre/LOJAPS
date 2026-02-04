@@ -269,6 +269,13 @@ function atualizarTotal(id){
 
     if(total>0 && pago) totalCell.classList.add('total-pago');
     if(total>0 && !pago) totalCell.classList.add('total-pendente');
+
+    // 👇 GUARDA O TOTAL NA LINHA PARA USAR NA ORDENAÇÃO
+    const tr = totalCell.closest('tr');
+    tr.dataset.total = total;
+    tr.dataset.pago = pago ? '1' : '0';
+
+    ordenarTabela();
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
@@ -301,6 +308,7 @@ function aplicarFiltro(texto){
 document.querySelectorAll('.pedido-pago-check').forEach(chk=>{
     chk.addEventListener('change',function(){
         atualizarTotal(this.dataset.cliente);
+        ordenarTabela();
     });
 });
 
@@ -456,7 +464,32 @@ function abrirRecibo(idPedido) {
     );
 }
 
+function ordenarTabela(){
+    const tbody = document.querySelector('tbody');
+    const linhas = Array.from(tbody.querySelectorAll('tr'));
 
+    linhas.sort((a,b)=>{
+        const totalA = parseFloat(a.dataset.total||0);
+        const totalB = parseFloat(b.dataset.total||0);
+
+        const pagoA = a.dataset.pago === '1';
+        const pagoB = b.dataset.pago === '1';
+
+        // REGRA DE PRIORIDADE
+        // 1) tem valor e não pago
+        if(totalA>0 && !pagoA && !(totalB>0 && !pagoB)) return -1;
+        if(totalB>0 && !pagoB && !(totalA>0 && !pagoA)) return 1;
+
+        // 2) tem valor e pago
+        if(totalA>0 && pagoA && !(totalB>0 && pagoB)) return -1;
+        if(totalB>0 && pagoB && !(totalA>0 && pagoA)) return 1;
+
+        // 3) resto
+        return 0;
+    });
+
+    linhas.forEach(tr=>tbody.appendChild(tr));
+}
 
 </script>
 </body>
