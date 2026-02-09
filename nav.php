@@ -29,6 +29,11 @@ $paginaAtual = $_SERVER['REQUEST_URI'];
            class="<?= str_contains($paginaAtual, '/produtos/') ? 'ativo' : '' ?>">
             Produtos
         </a>
+        <a href="<?= $base ?>/pedidos/abertos/pedidos_abertos.php"
+           class="<?= str_contains($paginaAtual, '/pedidos/abertos/') ? 'ativo' : '' ?>">
+            Fechamento
+        </a>
+
         <a href="<?= $base ?>/relatorios/relatorios.php"
            class="<?= str_contains($paginaAtual, '/relatorios/') ? 'ativo' : '' ?>">
             Relatório-Produto
@@ -36,11 +41,11 @@ $paginaAtual = $_SERVER['REQUEST_URI'];
         <a href="<?= $base ?>/relatorios/relatorio_financeiro.php"
            class="<?= str_contains($paginaAtual, '/relatorios/') ? 'ativo' : '' ?>">
             Relatório-Cliente
-        </a>         
+        </a>
         <a href="<?= $base ?>/logout.php"
            class="<?= str_contains($paginaAtual, '/') ? 'ativo' : '' ?>">
             Logout
-        </a>        
-        
+        </a>
+
     </nav>
 </header>

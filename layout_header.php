@@ -21,6 +21,17 @@ body {
     background: #0f0f0f;
     color: #fff;
 }
+/* =========================
+   ZEBRA TABLE (linhas alternadas)
+========================= */
+tbody tr:nth-child(odd) {
+    background-color: #1f1f1f; /* tom base */
+}
+
+tbody tr:nth-child(even) {
+    background-color: #262626; /* mesmo tom levemente mais claro */
+}
+
 
 main {
     margin-top: 56px; /* Altura do header fixo */
@@ -118,9 +129,10 @@ th {
 }
 
 tbody tr:hover {
-    background-color: #333;
-    cursor: default;
+    background-color: #303030;
+    transition: background-color 0.15s ease-in-out;
 }
+
 
 /* =========================
    LINKS BOTÕES arredondados
@@ -214,8 +226,8 @@ footer {
     box-shadow: 0 -4px 10px rgba(179, 0, 0, 0.6);
 }
 
-    
-    
+
+
 </style>
 </head>
 
