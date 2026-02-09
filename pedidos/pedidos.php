@@ -196,7 +196,29 @@ tr.pedido-pago{
 $id = $c['IdCliente'];
 $pedido = $pedidos[$id] ?? null;
 ?>
-<tr data-cliente="<?= strtolower($c['NomeCompletoCliente']) ?>">
+<?php
+$totalLinha = 0;
+
+if ($pedido) {
+    // soma itens
+    foreach ($produtos as $p) {
+        $qtd = $itensPedido[$pedido['IdPedido'] ?? 0][$p['IdProduto']] ?? 0;
+        $totalLinha += $qtd * $p['ValorProduto'];
+    }
+
+    // soma variado
+    $totalLinha += $pedido['ValorVariado'] ?? 0;
+}
+
+$pagoLinha = !empty($pedido['PedidoPago']) ? 1 : 0;
+?>
+
+<tr
+data-cliente="<?= strtolower($c['NomeCompletoCliente']) ?>"
+data-total="<?= $totalLinha ?>"
+data-pago="<?= $pagoLinha ?>"
+>
+
 <td><?= $c['NomeCompletoCliente'] ?></td>
 
 <?php foreach($produtos as $p): ?>
@@ -205,7 +227,8 @@ $pedido = $pedidos[$id] ?? null;
 class="produto produto-<?= $id ?>"
 data-valor="<?= $p['ValorProduto'] ?>"
 value="<?= $itensPedido[$pedido['IdPedido'] ?? 0][$p['IdProduto']] ?? 0 ?>"
-oninput="atualizarTotal(<?= $id ?>)">
+oninput="atualizarTotal(<?= $id ?>)"
+onblur="ordenarTabela()"
 </td>
 <?php endforeach; ?>
 
@@ -213,7 +236,7 @@ oninput="atualizarTotal(<?= $id ?>)">
 <input type="number" step="0.01" id="variado-<?= $id ?>"
 value="<?= $pedido['ValorVariado'] ?? 0 ?>"
 oninput="atualizarTotal(<?= $id ?>)"
-onblur="verificarVariado(<?= $id ?>)">
+onblur="finalizarEdicaoVariado(<?= $id ?>)">
 <button type="button" onclick="abrirObs(<?= $id ?>)">📝</button>
 <input type="hidden" id="obs-<?= $id ?>" value="<?= htmlspecialchars($pedido['ObservacaoVariado'] ?? '') ?>">
 </td>
@@ -275,7 +298,6 @@ function atualizarTotal(id){
     tr.dataset.total = total;
     tr.dataset.pago = pago ? '1' : '0';
 
-    ordenarTabela();
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
@@ -283,6 +305,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 <?php foreach($clientes as $c): ?>
 atualizarTotal(<?= $c['IdCliente'] ?>);
 <?php endforeach; ?>
+
+ordenarTabela(); // 👈 AQUI
 
 const filtroInput = document.getElementById('filtroCliente');
 
@@ -322,6 +346,10 @@ function verificarVariado(id) {
     if (valor > 0) {
         abrirObs(id, true);
     }
+}
+function finalizarEdicaoVariado(id){
+    verificarVariado(id);
+    ordenarTabela();
 }
 function abrirObs(id, destacar=false){
     clienteAtual = id;
