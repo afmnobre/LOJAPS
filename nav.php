@@ -41,7 +41,12 @@ $paginaAtual = $_SERVER['REQUEST_URI'];
         <a href="<?= $base ?>/relatorios/relatorio_financeiro.php"
            class="<?= str_contains($paginaAtual, '/relatorios/') ? 'ativo' : '' ?>">
             Relatório-Cliente
-        </a>
+	</a>
+
+        <a href="<?= $base ?>/relatorios/medias_vendas.php"
+           class="<?= str_contains($paginaAtual, '/relatorios/') ? 'ativo' : '' ?>">
+            Métricas
+	</a>
         <a href="<?= $base ?>/logout.php"
            class="<?= str_contains($paginaAtual, '/') ? 'ativo' : '' ?>">
             Logout
