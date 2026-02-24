@@ -133,6 +133,49 @@ GROUP BY mes_sort, mes_referencia
 ORDER BY mes_sort DESC
 ";
 $relatorioLiga = $pdo->query($sqlLigaMagic)->fetchAll(PDO::FETCH_ASSOC);
+
+/* ================= RELATÓRIO ANUAL DETALHADO ================= */
+$anoAtual = date('Y');
+
+$sqlAnual = "
+SELECT
+    m.mes AS numero_mes,
+    COALESCE(SUM(t.total_pedido), 0) AS total_mes,
+    COUNT(DISTINCT t.IdPedido) AS qtd_pedidos,
+    COUNT(DISTINCT t.IdCliente) AS qtd_clientes,
+    MIN(t.total_pedido) AS menor_pedido,
+    MAX(t.total_pedido) AS maior_pedido,
+    -- Média por dia (considerando dias reais com venda para não distorcer)
+    ROUND(COALESCE(SUM(t.total_pedido) / NULLIF(COUNT(DISTINCT t.data_pura), 0), 0), 2) AS media_diaria
+FROM (
+    SELECT 1 AS mes UNION SELECT 2 UNION SELECT 3 UNION SELECT 4
+    UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8
+    UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12
+) m
+LEFT JOIN (
+    SELECT
+        p.IdPedido,
+        p.IdCliente,
+        p.DataPedido AS data_pura,
+        MONTH(p.DataPedido) AS mes_pedido,
+        (COALESCE(SUM(pi.Quantidade * pi.ValorUnitario), 0) + COALESCE(p.ValorVariado, 0)) AS total_pedido
+    FROM pedidos p
+    LEFT JOIN pedido_itens pi ON pi.IdPedido = p.IdPedido
+    WHERE p.PedidoPago = 1 AND YEAR(p.DataPedido) = $anoAtual
+    GROUP BY p.IdPedido
+) t ON m.mes = t.mes_pedido
+GROUP BY m.mes
+ORDER BY m.mes ASC
+";
+
+$relatorioAnual = $pdo->query($sqlAnual)->fetchAll(PDO::FETCH_ASSOC);
+
+$mesesNomes = [
+    1 => 'JANEIRO', 2 => 'FEVEREIRO', 3 => 'MARÇO', 4 => 'ABRIL',
+    5 => 'MAIO', 6 => 'JUNHO', 7 => 'JULHO', 8 => 'AGOSTO',
+    9 => 'SETEMBRO', 10 => 'OUTUBRO', 11 => 'NOVEMBRO', 12 => 'DEZEMBRO'
+];
+
 ?>
 
 <h2>Médias de Vendas</h2>
@@ -232,6 +275,42 @@ $relatorioLiga = $pdo->query($sqlLigaMagic)->fetchAll(PDO::FETCH_ASSOC);
                 R$ <?= number_format($rl['total_ligamagic'], 2, ',', '.') ?>
             </td>
             <td align="right"><strong>R$ <?= number_format($totalGeral, 2, ',', '.') ?></strong></td>
+        </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+
+<br><hr>
+<h2>Relatório Detalhado Anual (<?= date('Y') ?>)</h2>
+<table border="1" width="100%" cellpadding="6" style="border-collapse: collapse;">
+    <thead style="background: #f9f9f9;">
+        <tr>
+            <th>Mês</th>
+            <th>Média Valor / Dia</th>
+            <th>Média / Semana</th>
+            <th>Total Mês</th>
+            <th>Média / Pedido</th>
+            <th>Média / Cliente</th>
+            <th>Menor Pedido</th>
+            <th>Maior Pedido</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($relatorioAnual as $r):
+            $nomeMes = $mesesNomes[$r['numero_mes']];
+            $mediaSemana = $r['total_mes'] / 4.33;
+            $mediaPedido = $r['qtd_pedidos'] > 0 ? ($r['total_mes'] / $r['qtd_pedidos']) : 0;
+            $mediaCliente = $r['qtd_clientes'] > 0 ? ($r['total_mes'] / $r['qtd_clientes']) : 0;
+        ?>
+        <tr>
+            <td><?= $nomeMes ?></td>
+            <td align="right">R$ <?= number_format($r['media_diaria'], 2, ',', '.') ?></td>
+            <td align="right">R$ <?= number_format($mediaSemana, 2, ',', '.') ?></td>
+            <td align="right">R$ <?= number_format($r['total_mes'], 2, ',', '.') ?></td>
+            <td align="right">R$ <?= number_format($mediaPedido, 2, ',', '.') ?></td>
+            <td align="right">R$ <?= number_format($mediaCliente, 2, ',', '.') ?></td>
+            <td align="right">R$ <?= number_format($r['menor_pedido'] ?? 0, 2, ',', '.') ?></td>
+            <td align="right">R$ <?= number_format($r['maior_pedido'] ?? 0, 2, ',', '.') ?></td>
         </tr>
         <?php endforeach; ?>
     </tbody>
