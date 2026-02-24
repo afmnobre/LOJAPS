@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Players Stop TCG</title>
-
+<link rel="icon" type="image/png" href="favicon/logo.png">
 <!-- Fonte estilo Pokémon -->
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
