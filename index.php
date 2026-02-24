@@ -2,11 +2,7 @@
 require 'layout_header.php';
 require 'nav.php';
 ?>
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<meta charset="UTF-8" />
-<title>Players Stop TCG - Administração Popup</title>
+
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -45,8 +41,7 @@ require 'nav.php';
     background: #1f4fb8;
 }
 </style>
-</head>
-<body>
+
 
 <div class="menu">
   <button onclick="abrirPopup('/relacionamentos/relacionamentos.php', 'RelEdições')">🔗 Relacionar Edições</button>
@@ -72,5 +67,4 @@ function abrirPopup(url, nomeJanela) {
 }
 </script>
 
-</body>
-</html>
+

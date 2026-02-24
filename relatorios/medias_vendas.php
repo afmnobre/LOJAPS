@@ -42,7 +42,6 @@ WHERE DAYOFWEEK(data) IN ($inDias)
 GROUP BY DAYOFWEEK(data)
 ORDER BY DAYOFWEEK(data)
 ";
-
 $mediasDias = $pdo->query($sqlDias)->fetchAll(PDO::FETCH_ASSOC);
 
 /* ================= MÉDIA POR SEMANA ================= */
@@ -99,16 +98,41 @@ FROM (
 ";
 $mediaAno = $pdo->query($sqlAno)->fetchColumn();
 
-/* ================= NOME DOS DIAS ================= */
 $diasNomes = [
-    1 => 'Domingo',
-    2 => 'Segunda',
-    3 => 'Terça',
-    4 => 'Quarta',
-    5 => 'Quinta',
-    6 => 'Sexta',
-    7 => 'Sábado',
+    1 => 'Domingo', 2 => 'Segunda', 3 => 'Terça',
+    4 => 'Quarta', 5 => 'Quinta', 6 => 'Sexta', 7 => 'Sábado',
 ];
+
+/* ================= VENDAS POR TIPO DE PAGAMENTO (MENSAL) ================= */
+$sqlPagamentosMes = "
+SELECT
+    DATE_FORMAT(p.DataPedido, '%Y-%m') as mes_sort,
+    DATE_FORMAT(p.DataPedido, '%m/%Y') as mes_referencia,
+    fp.NomeFormaPagamento,
+    SUM(pp.ValorPago) as total_pago
+FROM pedido_pagamentos pp
+JOIN pedidos p ON pp.IdPedido = p.IdPedido
+JOIN formas_pagamento fp ON pp.IdFormaPagamento = fp.IdFormaPagamento
+GROUP BY mes_sort, mes_referencia, fp.IdFormaPagamento, fp.NomeFormaPagamento
+ORDER BY mes_sort DESC, fp.NomeFormaPagamento ASC
+";
+$pagamentosMes = $pdo->query($sqlPagamentosMes)->fetchAll(PDO::FETCH_ASSOC);
+
+/* ================= RELATÓRIO LIGAMAGIC VS OUTROS (MENSAL) ================= */
+// Aqui usamos o ID 5 conforme seu novo cadastro
+$sqlLigaMagic = "
+SELECT
+    DATE_FORMAT(p.DataPedido, '%Y-%m') as mes_sort,
+    DATE_FORMAT(p.DataPedido, '%m/%Y') as mes_referencia,
+    SUM(CASE WHEN fp.IdFormaPagamento = 5 THEN pp.ValorPago ELSE 0 END) as total_ligamagic,
+    SUM(CASE WHEN fp.IdFormaPagamento != 5 THEN pp.ValorPago ELSE 0 END) as total_outros
+FROM pedido_pagamentos pp
+JOIN pedidos p ON pp.IdPedido = p.IdPedido
+JOIN formas_pagamento fp ON pp.IdFormaPagamento = fp.IdFormaPagamento
+GROUP BY mes_sort, mes_referencia
+ORDER BY mes_sort DESC
+";
+$relatorioLiga = $pdo->query($sqlLigaMagic)->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <h2>Médias de Vendas</h2>
@@ -127,9 +151,8 @@ $diasNomes = [
     </fieldset>
 </form>
 
-<!-- ================= TABELA MÉDIA POR DIA ================= -->
-<table border="1" width="100%" cellpadding="6">
-    <thead>
+<table border="1" width="100%" cellpadding="6" style="border-collapse: collapse;">
+    <thead style="background: #eee;">
         <tr>
             <th>Dia da Semana</th>
             <th>Média de Vendas</th>
@@ -147,9 +170,8 @@ $diasNomes = [
 
 <br>
 
-<!-- ================= RESUMO GERAL ================= -->
-<table border="1" width="100%" cellpadding="6">
-    <thead>
+<table border="1" width="100%" cellpadding="6" style="border-collapse: collapse;">
+    <thead style="background: #eee;">
         <tr>
             <th>Média por Semana</th>
             <th>Média por Mês</th>
@@ -157,7 +179,7 @@ $diasNomes = [
         </tr>
     </thead>
     <tbody>
-        <tr>
+        <tr style="text-align:center;">
             <td>R$ <?= number_format($mediaSemana,2,',','.') ?></td>
             <td>R$ <?= number_format($mediaMes,2,',','.') ?></td>
             <td>R$ <?= number_format($mediaAno,2,',','.') ?></td>
@@ -165,3 +187,52 @@ $diasNomes = [
     </tbody>
 </table>
 
+<br><hr>
+
+<h2>Vendas Mensais por Forma de Pagamento</h2>
+<table border="1" width="100%" cellpadding="6" style="border-collapse: collapse;">
+    <thead style="background: #f9f9f9;">
+        <tr>
+            <th>Mês/Ano</th>
+            <th>Forma de Pagamento</th>
+            <th>Total Recebido</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($pagamentosMes as $pag): ?>
+        <tr>
+            <td><?= $pag['mes_referencia'] ?></td>
+            <td><?= $pag['NomeFormaPagamento'] ?></td>
+            <td align="right">R$ <?= number_format($pag['total_pago'], 2, ',', '.') ?></td>
+        </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+
+<br>
+
+<h2>Comparativo Mensal: Outros vs LigaMagic</h2>
+<table border="1" width="100%" cellpadding="6" style="border-collapse: collapse; font-family: sans-serif;">
+    <thead>
+        <tr style="background-color: #f2f2f2;">
+            <th>Mês/Ano</th>
+            <th>Total Outros Pagamentos</th>
+            <th style="background-color: #ffb74d; color: #000;">Total Crédito - Ligamagic</th>
+            <th>Total Geral</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($relatorioLiga as $rl):
+            $totalGeral = $rl['total_ligamagic'] + $rl['total_outros'];
+        ?>
+        <tr style="text-align: center;">
+            <td style="padding: 10px;"><?= $rl['mes_referencia'] ?></td>
+            <td align="right">R$ <?= number_format($rl['total_outros'], 2, ',', '.') ?></td>
+            <td style="background-color: #ffb74d; color: #000; font-weight: bold; border: 1px solid #e6a741;" align="right">
+                R$ <?= number_format($rl['total_ligamagic'], 2, ',', '.') ?>
+            </td>
+            <td align="right"><strong>R$ <?= number_format($totalGeral, 2, ',', '.') ?></strong></td>
+        </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
