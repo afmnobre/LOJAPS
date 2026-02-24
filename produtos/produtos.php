@@ -2,9 +2,32 @@
 require '../conexao.php';
 
 /* =========================
-   CREATE / UPDATE
+   CREATE / UPDATE / ORDENACAO
 ========================= */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    /* =========================
+       SALVAR ORDENAÇÃO
+    ========================= */
+    if (isset($_POST['salvar_ordem'])) {
+
+        if (isset($_POST['ordem']) && is_array($_POST['ordem'])) {
+
+            foreach ($_POST['ordem'] as $idProduto => $ordem) {
+
+                $stmt = $pdo->prepare("
+                    UPDATE produtos
+                    SET OrdemExibicao = ?
+                    WHERE IdProduto = ?
+                ");
+
+                $stmt->execute([$ordem, $idProduto]);
+            }
+        }
+
+        header('Location: produtos.php');
+        exit;
+    }
 
     $id     = $_POST['IdProduto'] ?? '';
     $nome   = $_POST['NomeProduto'];
@@ -13,8 +36,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($id) {
         $stmt = $pdo->prepare("
-            UPDATE produtos 
-            SET NomeProduto = ?, ValorProduto = ?, StatusProduto = ?
+            UPDATE produtos
+            SET NomeProduto = ?,
+                ValorProduto = ?,
+                StatusProduto = ?
             WHERE IdProduto = ?
         ");
         $stmt->execute([$nome, $valor, $status, $id]);
@@ -55,7 +80,7 @@ if (isset($_GET['edit'])) {
    LISTAGEM
 ========================= */
 $produtos = $pdo
-    ->query("SELECT * FROM produtos ORDER BY NomeProduto")
+    ->query("SELECT * FROM produtos ORDER BY OrdemExibicao ASC, NomeProduto ASC")
     ->fetchAll(PDO::FETCH_ASSOC);
 
 /* =========================
@@ -64,15 +89,6 @@ $produtos = $pdo
 require_once '../layout_header.php';
 require_once '../nav.php';
 ?>
-
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<meta charset="UTF-8">
-<title>Cadastro de Produtos</title>
-</head>
-
-<body>
 
 <h2>Cadastro de Produtos</h2>
 
@@ -102,6 +118,8 @@ require_once '../nav.php';
     <button type="submit">Salvar</button>
 </form>
 
+<form method="post">
+
 <table border="1" width="100%">
 <thead>
 <tr>
@@ -109,17 +127,33 @@ require_once '../nav.php';
     <th>Nome</th>
     <th>Valor</th>
     <th>Status</th>
+    <th>Ordem</th>
     <th>Ações</th>
 </tr>
 </thead>
 
 <tbody>
-<?php foreach ($produtos as $p): ?>
+<?php
+$total = count($produtos);
+foreach ($produtos as $p):
+?>
 <tr>
     <td><?= $p['IdProduto'] ?></td>
     <td><?= $p['NomeProduto'] ?></td>
     <td>R$ <?= number_format($p['ValorProduto'], 2, ',', '.') ?></td>
     <td><?= $p['StatusProduto'] ?></td>
+
+    <td>
+        <select name="ordem[<?= $p['IdProduto'] ?>]">
+            <?php for ($i = 1; $i <= $total; $i++): ?>
+                <option value="<?= $i ?>"
+                    <?= (($p['OrdemExibicao'] ?? 0) == $i) ? 'selected' : '' ?>>
+                    <?= $i ?>
+                </option>
+            <?php endfor; ?>
+        </select>
+    </td>
+
     <td>
         <a href="produtos.php?edit=<?= $p['IdProduto'] ?>">Editar</a> |
         <a href="produtos.php?delete=<?= $p['IdProduto'] ?>"
@@ -130,5 +164,8 @@ require_once '../nav.php';
 </tbody>
 </table>
 
-</body>
-</html>
+<br>
+<button type="submit" name="salvar_ordem">Salvar Ordenação</button>
+
+</form>
+

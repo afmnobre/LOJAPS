@@ -12,7 +12,7 @@ if (!$idPedido) {
    BUSCA PEDIDO
 ========================= */
 $stmt = $pdo->prepare("
-    SELECT 
+    SELECT
         p.IdPedido,
         p.DataPedido,
         p.ValorVariado,
@@ -45,7 +45,7 @@ if (!empty($pedido['PedidoPago']) && $pedido['PedidoPago'] == 1) {
    ITENS DO PEDIDO
 ========================= */
 $stmt = $pdo->prepare("
-    SELECT 
+    SELECT
         pr.NomeProduto,
         pi.Quantidade,
         pi.ValorUnitario
@@ -130,6 +130,24 @@ body {
     font-size: 11px;
 }
 </style>
+
+<script>
+    // Dispara a impressão automaticamente ao abrir
+    window.onload = function() {
+        window.print();
+    };
+</script>
+
+<style>
+    @media print {
+        /* Define a largura comum de bobinas térmicas (80mm ou 58mm) */
+        body { width: 80mm; margin: 0; padding: 0; }
+        @page { margin: 0; }
+        .no-print { display: none; }
+    }
+</style>
+
+
 </head>
 
 <body>

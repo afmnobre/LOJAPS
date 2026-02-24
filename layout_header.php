@@ -10,7 +10,10 @@
 <!-- Fonte estilo Pokémon -->
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 <style>
 /* =========================
    BASE
@@ -34,13 +37,15 @@ tbody tr:nth-child(even) {
 
 
 main {
-    margin-top: 56px; /* Altura do header fixo */
-    padding-bottom: 30px; /* Altura do footer fixo */
-    box-sizing: border-box;
-    max-width: 100vw;
+    margin-top: 56px;
+    padding-bottom: 30px;
+    height: calc(100vh - 86px); /* header + footer */
+    overflow-y: auto;           /* AQUI está o segredo */
     overflow-x: hidden;
+    box-sizing: border-box;
     background: #0f0f0f;
 }
+
 
 
 /* =========================
@@ -225,7 +230,45 @@ footer {
     z-index: 1000;
     box-shadow: 0 -4px 10px rgba(179, 0, 0, 0.6);
 }
-
+			main{
+				overflow: visible !important;
+			}
+			input[type=number]{
+				width:70px;
+			}
+			td.total-pago{
+				background:#4caf50;
+				color:#fff;
+				font-weight:bold;
+			}
+			td.total-pendente{
+				background:#f44336;
+				color:#fff;
+				font-weight:bold;
+			}
+			tr.pedido-pago{
+				background:#e6f4ea;
+			}
+			#modalObs{
+				position:fixed;
+				inset:0;
+				background:rgba(0,0,0,.5);
+				display:none;
+			}
+			#modalObs div{
+				background:#fff;
+				width:400px;
+				margin:10% auto;
+				padding:10px;
+			}
+			@keyframes piscarBorda {
+				0%   { box-shadow: 0 0 0 10px red; }
+				50%  { box-shadow: 0 0 0 4px transparent; }
+				100% { box-shadow: 0 0 0 10px red; }
+			}
+			.modal-alerta {
+				animation: piscarBorda 0.8s infinite;
+			}
 
 
 </style>
@@ -235,13 +278,7 @@ footer {
 
 
 <main>
+<hr>
 <!-- Conteúdo principal aqui -->
 
-
-<footer>
-  <p>© 2026 Players Stop TCG — Todos os direitos reservados.</p>
-</footer>
-
-</body>
-</html>
 
